@@ -9,6 +9,15 @@ public static class GestorXML
 
         foreach (var p in peliculas)
         {
+            
+            Logger.Info("Película procesada:\n" +
+                        "Title: " + p.Title + "\n" +
+                        "Genre: " + p.Genre + "\n" +
+                        "Premiere: " + p.Premiere + "\n" +
+                        "Runtime: " + p.Runtime + " min\n" +
+                        "IMDB Score: " + p.ImdbScore.ToString(CultureInfo.InvariantCulture) + "\n" +
+                        "Language: " + p.Language);
+
             var elemento = new XElement("Pelicula",
                 new XElement("Title", p.Title),
                 new XElement("Genre", p.Genre),

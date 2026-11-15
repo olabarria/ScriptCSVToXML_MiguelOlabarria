@@ -24,11 +24,12 @@ do
         {
             var pelis = aXml ? GestorCSV.Leer(rutaEntrada) : GestorXML.Leer(rutaEntrada);
             Console.WriteLine("Leídas " + pelis.Count + " películas.");
-            MenuExportar(pelis, rutaSalida, aXml);
+            MenuExportar(pelis, rutaEntrada, rutaSalida, aXml);
         }
         catch (Exception e)
         {
             Console.WriteLine("Error: " + e.Message);
+            Logger.Error("ERROR durante la conversión: " + e.Message);
         }
     }
     else if (direccion != 0)
@@ -45,16 +46,30 @@ string Limpiar(string? texto)
     return (texto ?? "").Trim().Trim('"');
 }
 
-void Guardar(List<Pelicula> lista, string ruta, bool aXml)
+void Guardar(List<Pelicula> lista, string rutaEntrada, string rutaSalida, bool aXml)
 {
+    string conversion = aXml ? "CSV a XML" : "XML a CSV";
+
+    
+    Logger.Info("INICIO de la exportación de " + conversion + "\n" +
+                "Fichero de origen: " + Path.GetFullPath(rutaEntrada) + "\n" +
+                "Fichero de destino: " + Path.GetFullPath(rutaSalida) + "\n" +
+                "Películas a exportar: " + lista.Count);
+
     if (aXml)
-        GestorXML.Exportar(lista, ruta);
+        GestorXML.Exportar(lista, rutaSalida);
     else
-        GestorCSV.Exportar(lista, ruta);
+        GestorCSV.Exportar(lista, rutaSalida);
+
+    
+    Logger.Info("FIN de la exportación de " + conversion + "\n" +
+                "Se han exportado " + lista.Count + " películas.\n" +
+                "Fichero nuevo en: " + Path.GetFullPath(rutaSalida));
+
     Console.WriteLine("Exportadas " + lista.Count + " películas.");
 }
 
-void MenuExportar(List<Pelicula> pelis, string rutaSalida, bool aXml)
+void MenuExportar(List<Pelicula> pelis, string rutaEntrada, string rutaSalida, bool aXml)
 {
     int opcion;
     do
@@ -71,12 +86,12 @@ void MenuExportar(List<Pelicula> pelis, string rutaSalida, bool aXml)
         switch (opcion)
         {
             case 1:
-                Guardar(pelis, rutaSalida, aXml);
+                Guardar(pelis, rutaEntrada, rutaSalida, aXml);
                 break;
             case 2:
                 Console.Write("Año (se exportan ese año y los posteriores): ");
                 if (int.TryParse(Console.ReadLine(), out int anio))
-                    Guardar(pelis.Where(p => p.Anio >= anio).ToList(), rutaSalida, aXml);
+                    Guardar(pelis.Where(p => p.Anio >= anio).ToList(), rutaEntrada, rutaSalida, aXml);
                 else
                     Console.WriteLine("Año no válido");
                 break;
@@ -88,7 +103,7 @@ void MenuExportar(List<Pelicula> pelis, string rutaSalida, bool aXml)
                 if (int.TryParse(Console.ReadLine(), out int g) && g >= 1 && g <= generos.Count)
                 {
                     string generoElegido = generos[g - 1];
-                    Guardar(pelis.Where(p => p.Genre == generoElegido).ToList(), rutaSalida, aXml);
+                    Guardar(pelis.Where(p => p.Genre == generoElegido).ToList(), rutaEntrada, rutaSalida, aXml);
                 }
                 else
                     Console.WriteLine("Género no válido");
@@ -101,7 +116,7 @@ void MenuExportar(List<Pelicula> pelis, string rutaSalida, bool aXml)
                 if (int.TryParse(Console.ReadLine(), out int l) && l >= 1 && l <= idiomas.Count)
                 {
                     string idiomaElegido = idiomas[l - 1];
-                    Guardar(pelis.Where(p => p.Language == idiomaElegido).ToList(), rutaSalida, aXml);
+                    Guardar(pelis.Where(p => p.Language == idiomaElegido).ToList(), rutaEntrada, rutaSalida, aXml);
                 }
                 else
                     Console.WriteLine("Idioma no válido");

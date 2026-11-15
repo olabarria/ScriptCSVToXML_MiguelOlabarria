@@ -36,6 +36,15 @@ public static class GestorCSV
 
         foreach (var p in peliculas)
         {
+            
+            Logger.Info("Película procesada:\n" +
+                        "Title: " + p.Title + "\n" +
+                        "Genre: " + p.Genre + "\n" +
+                        "Premiere: " + p.Premiere + "\n" +
+                        "Runtime: " + p.Runtime + " min\n" +
+                        "IMDB Score: " + p.ImdbScore.ToString(CultureInfo.InvariantCulture) + "\n" +
+                        "Language: " + p.Language);
+
             lineas.Add(Campo(p.Title) + "," +
                        Campo(p.Genre) + "," +
                        Campo(p.Premiere) + "," +
